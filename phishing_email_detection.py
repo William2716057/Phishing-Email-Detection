@@ -9,6 +9,64 @@ from bs4 import BeautifulSoup
 
 #use cli interface 
 #python phishing_email_detection.py <email.eml>
+class PhishingDetector:
+    def __init__(self, eml_path):
+        with open(eml_path, 'rb') as f:
+            self.msg = email.message_from_binary_file(f, policy=policy.default)
+        self.scores = []
+        self.findings = []
+        
+def analyze(self):
+        print(f"Analyzing: {self.msg['Subject']}.....")
+        
+        #Analyse header
+        sender = self.msg.get('From', '')
+        domain = re.search(r"@([\w.-]+)", sender).group(1) if "@" in sender else None
+        self.check_domain_age(domain)
+
+        #Analyse URL
+        body = self.msg.get_body(preferencelist=('html', 'plain')).get_content()
+        self.check_urls(body)
+
+        #Analyse content
+        self.check_sentiment(body)
+
+        #Analyse attachments 
+        self.check_attachments()
+
+        self.report()
+        
+def check_domain_age(self, domain):
+        if not domain: return
+        try:
+            w = whois.whois(domain)
+            creation_date = w.creation_date
+            if isinstance(creation_date, list): creation_date = creation_date[0]
+            
+            age_days = (datetime.datetime.now() - creation_date).days
+            if age_days < 90:
+                self.findings.append(f"Domain: Registered only {age_days} days ago. May be suspicious")
+        except:
+            self.findings.append("whois lookup failed")
+
+    def check_urls(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        links = soup.find_all('a', href=True)
+        
+        #check links
+        for link in links:
+            href = link['href']
+            text = link.get_text()
+            
+            #Levenshtein mismatches
+            if "http" in text:
+                dist = Levenshtein.distance(text, href)
+                if dist > 5:
+                    self.findings.append(f"Link Mismatch Found: '{text}': '{href}'")
+
+            # CCHeck for obfuscations
+            if "@" in href.split("//")[-1]:
+                self.findings.append(f"[!] URL Obfuscation: '@' symbol trick detected in {href}")
 
 #extract_sender_domain(email_headers)
 
