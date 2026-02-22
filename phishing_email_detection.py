@@ -68,6 +68,34 @@ def check_domain_age(self, domain):
             if "@" in href.split("//")[-1]:
                 self.findings.append(f"[!] URL Obfuscation: '@' symbol trick detected in {href}")
 
+#sentiment checks
+def check_sentiment(self, text):
+        urgent_keywords = ["urgent", "immediately", "verify now", "account suspended"]
+        found = [w for w in urgent_keywords if w in text.lower()]
+        if found:
+            self.findings.append(f"Urgent Language: {found}")
+
+        def check_attachments(self):
+             dangerous_exts = ['.exe', '.scr', '.bat', '.js', '.docm']
+        for part in self.msg.iter_attachments():
+            filename = part.get_filename()
+            if filename:
+                ext = "." + filename.split('.')[-1]
+                if ext in dangerous_exts:
+                     self.findings.append(f"Dangerous Attachment: {filename}")
+
+def report(self):
+    for finding in self.findings:
+        print(finding)
+        if not self.findings:
+            print("No immediate threats detected.")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python phishing_detector.py <email.eml>")
+    else:
+        detector = PhishingDetector(sys.argv[1])
+        detector.analyze()
 #extract_sender_domain(email_headers)
 
 #check_spf_dkim_dmarc(headers)
