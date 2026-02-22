@@ -70,19 +70,24 @@ def check_domain_age(self, domain):
 
 #sentiment checks
 def check_sentiment(self, text):
-        urgent_keywords = ["urgent", "immediately", "verify now", "account suspended"]
-        found = [w for w in urgent_keywords if w in text.lower()]
-        if found:
-            self.findings.append(f"Urgent Language: {found}")
+    urgent_keywords = ["urgent", "immediately", "verify now", "account suspended"]
+    found = [w for w in urgent_keywords if w in text.lower()]
+    
+    if found:
+        self.findings.append(f"Urgent Language: {found}")
 
-        def check_attachments(self):
-             dangerous_exts = ['.exe', '.scr', '.bat', '.js', '.docm']
-        for part in self.msg.iter_attachments():
-            filename = part.get_filename()
-            if filename:
-                ext = "." + filename.split('.')[-1]
-                if ext in dangerous_exts:
-                     self.findings.append(f"Dangerous Attachment: {filename}")
+
+def check_attachments(self):
+    dangerous_exts = ['.exe', '.scr', '.bat', '.js', '.docm']
+    
+    for part in self.msg.iter_attachments():
+        filename = part.get_filename()
+        
+        if filename:
+            ext = "." + filename.split('.')[-1].lower()
+            
+            if ext in dangerous_exts:
+                self.findings.append(f"Dangerous Attachment: {filename}")
 
 def report(self):
     for finding in self.findings:
