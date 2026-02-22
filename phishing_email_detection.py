@@ -1,3 +1,12 @@
+import sys
+import email
+import re
+import whois
+import datetime
+import Levenshtein
+from email import policy
+from bs4 import BeautifulSoup
+
 #use cli interface 
 #python phishing_email_detection.py <email.eml>
 
